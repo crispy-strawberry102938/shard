@@ -104,7 +104,7 @@ impl Tokenizer {
 
         let bytes = self.source.as_bytes();
         while self.pos < bytes.len() {
-            match c {
+            match bytes[self.pos] {
                 b'+' => tokens.push(Token::Plus),
                 b'-' => tokens.push(Token::Minus),
                 b'*' => tokens.push(Token::Star),
