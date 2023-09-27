@@ -4,7 +4,7 @@ mod utils;
 mod defs;
 mod parser;
 mod compiler;
-mod lexer;
+mod tokenizer;
 
 use logger::{logger, DEBUG, OK, WARN, ERR, FATAL, at, At, WTF};
 use args_parser::ARGS;
