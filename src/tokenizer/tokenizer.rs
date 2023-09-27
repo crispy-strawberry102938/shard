@@ -20,7 +20,6 @@ impl Tokenizer {
     }
 
     pub fn tokenize(&mut self) -> &Vec<Token> {
-        println!("{:?}", self.source);
         while !self.at_end() {
             match self.current() {
                 '+' => self.push_and_advance(Token::Plus),
@@ -60,7 +59,6 @@ impl Tokenizer {
 
     /// Pushes a single token and advances by 1 unit.
     fn push_and_advance(&mut self, token: Token) {
-        println!("Pushed a token!");
         self.advance();
         self.tokens.push(token);
     }
