@@ -88,7 +88,7 @@ pub enum Conditional {
 
 #[derive(Debug)]
 pub struct Tokenizer {
-    source: String,
+    source: Vec<char>,
     pos: usize,
     line: usize,
 }
@@ -97,7 +97,7 @@ impl Tokenizer {
 
     pub fn new(source: String) -> Self {
         return Self {
-            source,
+            source: source.chars().collect(),
             pos: 0,
             line: 1,
         }
@@ -106,43 +106,57 @@ impl Tokenizer {
     pub fn tokenize(&mut self, source: String) -> Vec<Token> {
         let mut tokens  = Vec::new();
 
-        let bytes = self.source.as_bytes();
-        while self.pos < bytes.len() {
-            match bytes[self.pos] {
-                b'+' => tokens.push(Token::Plus),
-                b'-' => tokens.push(Token::Minus),
-                b'*' => tokens.push(Token::Star),
-                b'/' => tokens.push(Token::Slash),
-                b'!' => tokens.push(Token::Bang),
-                b'(' => tokens.push(Token::LParen),
-                b')' => tokens.push(Token::RParen),
-                b'{' => tokens.push(Token::LCurly),
-                b'}' => tokens.push(Token::RCurly),
-                b'[' => tokens.push(Token::LSquare),
-                b']' => tokens.push(Token::RSquare),
+        while !self.at_end() {
+            match self.current() {
+                '+' => tokens.push(Token::Plus),
+                '-' => tokens.push(Token::Minus),
+                '*' => tokens.push(Token::Star),
+                '/' => tokens.push(Token::Slash),
+                '!' => tokens.push(Token::Bang),
+                '(' => tokens.push(Token::LParen),
+                ')' => tokens.push(Token::RParen),
+                '{' => tokens.push(Token::LCurly),
+                '}' => tokens.push(Token::RCurly),
+                '[' => tokens.push(Token::LSquare),
+                ']' => tokens.push(Token::RSquare),
                 
 
-                b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
+                'a'..='z' | 'A'..='Z' | '_' => {
 
                 },
-                b'\n' => { 
+                '\n' => { 
                     tokens.push(Token::Newline);
                     self.line += 1;
                 },
-                b' ' => continue,
+                ' ' => continue,
                 _ => panic!("Invalid character")
             }
-            self.advance()
+            self.advance();
         }
+        tokens.push(Token::EOF);
         return tokens;
     }
 
     fn tokenize_identifier(&mut self) {
+        
+    }
 
+
+    #[inline]
+    pub fn current(&self) -> char {
+        self.source[self.pos]
     }
 
     #[inline]
     fn advance(&mut self) {
         self.pos += 1;
     }
+
+    fn at_end(&self) -> bool {
+        self.pos <= self.source.len()
+    }
+
+    fn peek(&self) -> char {
+        self.source[self.pos + 1]
+    } 
 }
