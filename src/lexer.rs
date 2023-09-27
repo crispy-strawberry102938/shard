@@ -1,9 +1,10 @@
-use std::error::Error;
-
 /// A token in the source code
 #[derive(Debug)]
 pub enum Token {
+    /// #[a..z | A..=Z]
     Label(String),
+    /// ~[a..z | A..Z] 
+    Jump(String),
 
     /// A stack variable
     StackVar(String),
@@ -18,7 +19,6 @@ pub enum Token {
 
     Ret,
     FuncCall,
-    Jump(String),
     Mutate(String),
 
     /// (
@@ -45,14 +45,16 @@ pub enum Token {
     /// /
     Slash,
 
-    Newline
+    /// =
+    Equal,
+
+    Newline,
+
+    EOF
 }
 
 #[derive(Debug)]
-pub struct Register {
-    val: u8,
-    r#type: RegisterType
-}
+pub struct Register(u8, RegisterType);
 
 #[derive(Debug)]
 enum RegisterType {
@@ -72,22 +74,23 @@ pub enum Directive {
     Def
 }
 
+/// Does not include `=` as it depends on context.
 #[derive(Debug)]
 pub enum Conditional {
-    Equal,
     NotEqual,
 
     LessThan,
     GreaterThan,
 
     LessOrEqual,
-    GreaterOrEquasl,
+    GreaterOrEquals,
 }
 
 #[derive(Debug)]
 pub struct Tokenizer {
     source: String,
     pos: usize,
+    line: usize,
 }
 
 impl Tokenizer {
@@ -96,10 +99,11 @@ impl Tokenizer {
         return Self {
             source,
             pos: 0,
+            line: 1,
         }
     }
 
-    pub fn tokenise(self: &Self, source: String) -> Vec<Token> {
+    pub fn tokenize(&mut self, source: String) -> Vec<Token> {
         let mut tokens  = Vec::new();
 
         let bytes = self.source.as_bytes();
@@ -121,15 +125,24 @@ impl Tokenizer {
                 b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
 
                 },
-                b'\n' => tokens.push(Token::Newline),
+                b'\n' => { 
+                    tokens.push(Token::Newline);
+                    self.line += 1;
+                },
                 b' ' => continue,
                 _ => panic!("Invalid character")
             }
+            self.advance()
         }
         return tokens;
     }
 
-    fn parse_indent() {
+    fn tokenize_identifier(&mut self) {
 
+    }
+
+    #[inline]
+    fn advance(&mut self) {
+        self.pos += 1;
     }
 }
